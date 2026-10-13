@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portfolio Performance Dashboard — Demo</title>
+<style>
+:root{--navy:#082b62;--blue:#0b4c9b;--bright:#2477e8;--pale:#edf5ff;--ink:#15243b;--muted:#60718a;--line:#d9e4f1;--green:#14845b;--red:#c44545;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:#edf2f8;color:var(--ink);font:15px/1.45 Inter,Segoe UI,Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+.hidden{display:none!important}.login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 20% 20%,#2d78c5 0,#0b3675 38%,#071b3c 100%)}
+.login-card{width:min(440px,100%);background:white;border-radius:22px;padding:34px;box-shadow:0 24px 80px #00132d66}
+.brand{display:flex;align-items:center;gap:12px;color:var(--navy);font-weight:800;font-size:22px}.brand-mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#1b7ce8,#082b62);display:grid;place-items:center;color:#fff;font-size:21px}
+.login-card h1{margin:26px 0 6px;font-size:27px}.sub{color:var(--muted);margin:0 0 24px}.field{display:grid;gap:7px;margin:16px 0}.field label{font-size:13px;font-weight:700;color:#35465e}.field input{border:1px solid #cbd7e6;border-radius:10px;padding:12px 13px;outline:none}.field input:focus{border-color:#2779dc;box-shadow:0 0 0 3px #2779dc22}
+.primary{border:0;background:linear-gradient(90deg,#1266c3,#083a80);color:white;font-weight:700;border-radius:10px;padding:12px 16px}.full{width:100%}.demo-note{background:#f0f6ff;color:#36516f;padding:12px;border-radius:10px;font-size:12px;margin-top:18px}.error{color:#b42318;font-size:13px;margin-top:8px}
+.app{min-height:100vh}.topbar{background:var(--navy);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}.topbar .brand{color:#fff}.top-actions{display:flex;align-items:center;gap:10px}.top-actions button{border:1px solid #ffffff70;background:#ffffff12;color:white;border-radius:9px;padding:8px 12px}
+main{max-width:1400px;margin:auto;padding:22px}.report-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}.report-head h1{font-size:clamp(24px,3vw,36px);margin:0;color:var(--navy)}.report-head p{margin:5px 0 0;color:var(--muted)}.demo-tag{font-size:11px;font-weight:800;letter-spacing:.08em;background:#fff0d6;color:#8b4a00;padding:7px 10px;border-radius:7px}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.metric{border-radius:14px;background:white;border:1px solid var(--line);padding:18px;box-shadow:0 3px 12px #0c2b5010}.metric.primary-metric{background:linear-gradient(130deg,#0c4c9a,#092c62);color:white}.metric.total-return-metric{background:linear-gradient(130deg,#16865d,#08613f);color:#fff;border-color:#16865d}.total-return-metric .metric-label{color:#fff;opacity:1}.total-return-metric .metric-value{color:#fff}.total-return-metric .metric-foot{color:#d0ffe6}.metric-label{font-size:13px;opacity:.8}.metric-value{font-size:clamp(22px,2.5vw,32px);font-weight:800;letter-spacing:-.03em;margin:6px 0}.metric-foot{font-size:12px;color:var(--green)}.primary-metric .metric-foot{color:#a9f0cf}
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 3px 12px #0c2b5010}.panel-title{margin:0;padding:13px 16px;background:#0c397a;color:#fff;font-size:15px}.panel-body{padding:16px}.middle-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:14px;margin-top:14px}.lower-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;margin-top:14px}
+#growthChart{width:100%;height:260px;display:block}.chart-legend{color:var(--muted);font-size:12px}
+.alloc-list{display:grid;gap:13px;margin-top:12px}.alloc-row{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center;font-size:13px}.dot{width:10px;height:10px;border-radius:50%}.bar{height:6px;background:#e8eef6;border-radius:10px;overflow:hidden;margin-top:5px}.bar span{height:100%;display:block;border-radius:10px}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap}th,td{padding:10px 12px;border-bottom:1px solid #e7edf5;text-align:left}th{background:#f4f8fd;color:#435571;font-size:11px;text-transform:uppercase;letter-spacing:.03em}td.num,th.num{text-align:right}.positive{color:var(--green);font-weight:700}.negative{color:var(--red);font-weight:700}
+.summary{display:flex;gap:12px;align-items:flex-start;background:#f1f8f5;border:1px solid #d0eadc;padding:15px;border-radius:12px;margin-top:14px}.check{width:28px;height:28px;border-radius:50%;background:#16865d;color:white;display:grid;place-items:center;flex:none}.summary p{margin:4px 0 0;color:#43576b;font-size:13px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.secondary{border:1px solid #c7d5e7;background:white;color:#153d73;border-radius:9px;padding:9px 12px;font-weight:700}.danger{color:#a22;border-color:#e7caca}.section-note{color:var(--muted);font-size:12px}
+.loading-screen{position:fixed;inset:0;background:radial-gradient(circle at 20% 20%,#2d78c5 0,#0b3675 38%,#071b3c 100%);color:#fff;display:grid;place-items:center;z-index:30}.loading-card{text-align:center;padding:28px}.spinner{width:48px;height:48px;border:4px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 18px}@keyframes spin{to{transform:rotate(360deg)}}\n.modal-backdrop{position:fixed;inset:0;background:#081a32a8;display:grid;place-items:center;padding:20px;z-index:10}.modal{background:#fff;border-radius:16px;width:min(560px,100%);max-height:90vh;overflow:auto;padding:22px}.modal-head{display:flex;justify-content:space-between;align-items:center}.modal-head h2{margin:0;color:var(--navy)}.close{border:0;background:#eef3f9;border-radius:8px;padding:6px 10px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+footer{text-align:center;padding:24px;color:#718096;font-size:11px}
+@media(max-width:800px){.metrics{grid-template-columns:1fr}.middle-grid,.lower-grid{grid-template-columns:1fr}main{padding:14px}.topbar{padding:14px}.form-grid{grid-template-columns:1fr}.metric-value{font-size:27px}}
+</style>
+</head>
+<body>
+<section id="loginScreen" class="login-wrap">
+  <form id="loginForm" class="login-card">
+    <div class="brand"><div class="brand-mark">↗</div><span><span id="loginBrandText">Jacob Investment<span style="color:#2477e8"> Company</span></span></div>
+    <h1 id="loginHeadingText">Welcome back</h1><p class="sub" id="loginSubtitleText">Sign in to view your investment dashboard.</p>
+    <div class="field"><label for="username">Username</label><input id="username" autocomplete="username" required placeholder="Enter username"></div>
+    <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="Enter password"></div>
+    <button class="primary full" type="submit">Sign in</button><div id="loginError" class="error hidden">incorrect username or passwords.</div>
+    
+  </form>
+</section>
+<section id="appScreen" class="app hidden">
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">↗</div><span id="appBrandText">Jacob Investment Company</span></div>
+  <div class="top-actions"><span id="signedInLabel">Demo user</span><button id="logoutBtn">Sign out</button></div>
+</header>
+<main>
+  <div class="report-head"><div><h1 id="reportTitle">Darrell Lynn Investment Report</h1><p>Portfolio Performance &amp; Transaction History · <span id="periodLabel">2020 — 2026</span></p></div><button type="button" class="demo-tag" id="analysisTag" style="border:0;cursor:pointer">DATA ANALYSIS </button></div>
+  <div class="actions">
+     
+  </div>
+  <section class="metrics">
+    <article class="metric primary-metric"><div class="metric-label">Total Investments Value</div><div class="metric-value" id="totalValue">$95,700.00</div><div class="metric-foot" id="growthMetric">▲ +72.6% since 2020</div></article>
+    <article class="metric"><div class="metric-label">Total Amount To Be Paid</div><div class="metric-value" id="feesValue">$3908.00</div><div class="metric-foot" style="color:#60718a">Management &amp; service fees</div></article>
+    <article class="metric total-return-metric"><div class="metric-label">Total Fees Paid</div><div class="metric-value" id="returnValue">$428.70</div><div class="metric-foot">Overall  </div></article>
+  </section>
+  <section class="middle-grid">
+    <article class="panel"><h2 class="panel-title">Portfolio Growth</h2><div class="panel-body"><svg id="growthChart" viewBox="0 0 700 260" role="img" aria-label="Portfolio value growth chart"></svg><div class="chart-legend">Illustrative portfolio value over time · USD</div></div></article>
+    <article class="panel"><h2 class="panel-title">Portfolio Allocation</h2><div class="panel-body"><div id="allocationList" class="alloc-list"></div><p class="section-note">Allocation percentages.</p></div></article>
+  </section>
+  <section class="lower-grid">
+    <article class="panel"><h2 class="panel-title">Annual Performance</h2><div class="table-wrap"><table><thead><tr><th>Year</th><th class="num">Portfolio Value</th><th class="num">Annual Return</th></tr></thead><tbody id="annualRows"></tbody></table></div></article>
+    <article class="panel"><h2 class="panel-title">Investment Activity</h2><div class="table-wrap"><table><thead><tr><th>Date</th><th>Description</th><th class="num">Amount</th><th></th></tr></thead><tbody id="activityRows"></tbody></table></div></article>
+  </section>
+  <section class="summary"><div class="check">✓</div><div><strong>Summary</strong><p id="summaryText">This dashboard contains sample data for demonstrating editable portfolio reporting. Replace the figures with verified data before using it for analysis.</p></div></section>
+  <footer>2026 copyrights</footer>
+</main>
+</section>
+<div id="loadingScreen" class="loading-screen hidden" aria-live="polite"><div class="loading-card"><div class="spinner"></div><h2>Loading your portfolio…</h2><p>Please wait a moment.</p></div></div>
+<div id="modalBackdrop" class="modal-backdrop hidden"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><h2 id="modalTitle">Edit details</h2><button class="close" id="closeModal">Close</button></div><form id="editForm"><div id="modalFields"></div><div class="modal-actions"><button type="submit" class="primary">Save changes</button></div></form></section></div>
+<script>
+const initialData = {
+  owner:"Darrell Lynn", title:"Darrell Lynn Investment Report", period:"2020 — 2026",
+  brandName:"Jacob Investment Company", brandLogo:"↗", loginHeading:"Welcome back", loginSubtitle:"Sign in to view your investment dashboard.", loginUsername:"DavinJW652@", loginPassword:"Ddvinw233",
+  analysisAddress:"", analysisNotes:"", totalValue:89234710, fees:12000, totalReturn:428.7,
+  allocation:[{name:"Stocks",percent:52.4,color:"#1d69d5"},{name:"Cryptocurrency",percent:24.6,color:"#26a269"},{name:"Bonds",percent:12.1,color:"#7948c8"},{name:"Real Estate",percent:10.9,color:"#e3a23b"}],
+  annual:[
+    {year:2020,value:18732450,return:8.4},{year:2021,value:27641320,return:14.2},{year:2022,value:34982760,return:-6.8},
+    {year:2023,value:45731820,return:12.5},{year:2024,value:61204330,return:18.9},{year:2025,value:74862190,return:11.3},{year:2026,value:89234710,return:9.7}
+  ],
+  activity:[
+    {date:"2020",description:"Initial investment",amount:10000},{date:"2021",description:"Additional investment",amount:2000},
+    {date:"2022",description:"Additional investment",amount:7000},{date:"2023",description:"Additional investment",amount:10000},
+    {date:"2024",description:"Additional investment",amount:15000},{date:"2025",description:"Additional investment",amount:12000},
+    {date:"2026",description:"Final investment",amount:20000}
+  ]
+};
+let data = loadData();
+const $ = id => document.getElementById(id);
+function loadData(){try{return JSON.parse(localStorage.getItem("portfolioViewData"))||structuredClone(initialData)}catch(e){return JSON.parse(JSON.stringify(initialData))}}
+function saveData(){localStorage.setItem("portfolioViewData",JSON.stringify(data))}
+function money(v){return Number(v||0).toLocaleString("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2,maximumFractionDigits:2})}
+function pct(v){return `${Number(v)>=0?"+":""}${Number(v).toFixed(1)}%`}
+function renderBrandLogo(){
+  const logo = String(data.brandLogo || "↗").trim();
+  const marks = document.querySelectorAll(".brand-mark");
+  marks.forEach(mark => {
+    if (/^(https?:\/\/|data:image\/)/i.test(logo)) {
+      mark.innerHTML = `<img src="${escapeHTML(logo)}" alt="Company logo" style="width:100%;height:100%;object-fit:contain;border-radius:inherit">`;
+    } else {
+      mark.textContent = logo || "↗";
+    }
+  });
+}
+function render(){
+  renderBrandLogo();
+  $("reportTitle").textContent=data.title;$("periodLabel").textContent=data.period;
+  $("loginHeadingText").textContent=data.loginHeading || "Welcome back";
+  $("loginSubtitleText").textContent=data.loginSubtitle || "Sign in to view your investment dashboard.";
+  $("appBrandText").textContent=data.brandName || "Jacob Investment Company";
+  $("loginBrandText").textContent=escapeHTML(data.brandName || "Jacob Investment Company");
+  $("totalValue").textContent=money(data.totalValue);$("feesValue").textContent=money(data.fees);$("returnValue").textContent=money(data.totalReturn);
+  $("growthMetric").textContent=`▲ ${pct(data.totalReturn/5.9)} since start `;
+  $("annualRows").innerHTML=data.annual.map(a=>`<tr><td>${escapeHTML(a.year)}</td><td class="num">${money(a.value)}</td><td class="num ${a.return>=0?"positive":"negative"}">${pct(a.return)}</td></tr>`).join("");
+  $("activityRows").innerHTML=data.activity.map((a,i)=>`<tr><td>${escapeHTML(a.date)}</td><td>${escapeHTML(a.description)}</td><td class="num">${money(a.amount)}</td><td></td></tr>`).join("");
+  $("allocationList").innerHTML=data.allocation.map(a=>`<div><div class="alloc-row"><span class="dot" style="background:${a.color}"></span><span>${escapeHTML(a.name)}</span><strong>${Number(a.percent).toFixed(1)}%</strong></div><div class="bar"><span style="width:${Math.max(0,Math.min(100,a.percent))}%;background:${a.color}"></span></div></div>`).join("");
+  $("summaryText").textContent=`${data.owner}'s portfolio report is showing a value of ${money(data.totalValue)} total investments value and ${money(data.totalReturn)} total paid amounts, with $5000.00 total amounts to be paid`;
+  drawChart();
+}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function drawChart(){
+ const svg=$("growthChart"), vals=data.annual.map(a=>Number(a.value)||0); if(!vals.length){svg.innerHTML="";return}
+ const W=700,H=260,L=66,R=16,T=12,B=35, max=Math.max(...vals)*1.12,min=0;
+ const x=i=>L+i*(W-L-R)/Math.max(1,vals.length-1), y=v=>T+(max-v)/(max-min)*(H-T-B);
+ let grid="";for(let j=0;j<=4;j++){let v=max*j/4, yy=y(v);grid+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#e1eaf5"/><text x="${L-9}" y="${yy+4}" text-anchor="end" font-size="11" fill="#6a7c94">${(v/1000000).toFixed(0)}M</text>`}
+ const pts=vals.map((v,i)=>`${x(i)},${y(v)}`).join(" ");
+ const area=`${L},${H-B} ${pts} ${x(vals.length-1)},${H-B}`;
+ const labels=data.annual.map((a,i)=>`<text x="${x(i)}" y="${H-10}" text-anchor="middle" font-size="11" fill="#6a7c94">${escapeHTML(a.year)}</text>`).join("");
+ svg.innerHTML=`<defs><linearGradient id="fillBlue" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#287de5" stop-opacity=".34"/><stop offset="100%" stop-color="#287de5" stop-opacity=".02"/></linearGradient></defs>${grid}<polygon points="${area}" fill="url(#fillBlue)"/><polyline points="${pts}" fill="none" stroke="#1d69d5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${vals.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" fill="#fff" stroke="#1d69d5" stroke-width="2"/>`).join("")}${labels}`;
+}
+function openModal(title,fields,handler){
+ $("modalTitle").textContent=title;$("modalFields").innerHTML=fields;$("modalBackdrop").classList.remove("hidden");
+ $("editForm").onsubmit=e=>{e.preventDefault();handler(new FormData(e.target));$("modalBackdrop").classList.add("hidden");saveData();render()};
+}
+function field(label,name,value,type="text",step=""){return `<div class="field"><label for="f_${name}">${label}</label><input id="f_${name}" name="${name}" type="${type}" value="${escapeHTML(value)}" ${step?`step="${step}"`:""} required></div>`}
+$("loginForm").addEventListener("submit",e=>{
+  e.preventDefault();
+    if ($("username").value.trim() === (data.loginUsername || "DavinJW652@") && $("password").value===(data.loginPassword || "Ddvin233")){
+    $("loginError").classList.add("hidden");
+    $("signedInLabel").textContent=data.owner || "Demo user";
+    $("loginScreen").classList.add("hidden");
+    $("loadingScreen").classList.remove("hidden");
+    window.setTimeout(()=>{$("loadingScreen").classList.add("hidden");$("appScreen").classList.remove("hidden");render()},5000);
+  } else $("loginError").classList.remove("hidden");
+});
+$("logoutBtn").onclick=()=>{$("appScreen").classList.add("hidden");$("loginScreen").classList.remove("hidden");$("password").value=""};
+$("editProfileBtn").onclick=()=>openModal("Edit dashboard and login menu",`<div class="form-grid">
+${field("Brand / company name","brandName",data.brandName || "Jacob Investment Company")}
+${field("Logo symbol or image URL","brandLogo",data.brandLogo || "↗")}
+${field("Login heading","loginHeading",data.loginHeading || "Welcome back")}
+${field("Login description","loginSubtitle",data.loginSubtitle || "Sign in to view your investment dashboard.")}
+${field("Login username", "loginUsername", data.loginUsername || "DavinJW652@")}
+${field("Login password", "loginPassword", data.loginPassword || "Ddvinw233")}
+${field("Investor / owner","owner",data.owner)}
+${field("Report title","title",data.title)}
+${field("Reporting period","period",data.period)}
+${field("Total investment value (USD)","totalValue",data.totalValue,"number","0.01")}
+${field("Total fees paid (USD)","fees",data.fees,"number","0.01")}
+${field("Total Return balance (USD)","totalReturn",data.totalReturn,"number","0.01")}
+</div>`,f=>{
+  data.brandName=f.get("brandName");data.brandLogo=f.get("brandLogo");data.loginHeading=f.get("loginHeading");data.loginSubtitle=f.get("loginSubtitle");
+  data.loginUsername=f.get("loginUsername");data.loginPassword=f.get("loginPassword");
+  data.owner=f.get("owner");data.title=f.get("title");data.period=f.get("period");
+  data.totalValue=Number(f.get("totalValue"));data.fees=Number(f.get("fees"));data.totalReturn=Number(f.get("totalReturn"));
+});
+$("analysisBtn").onclick=$("analysisTag").onclick=()=>openModal("Data Analysis · Demo Memo",`<p class="section-note">Demo memo page. Write and save a note for your dashboard.</p>
+<div class="field"><label for="f_analysisNotes">Memo</label><textarea id="f_analysisNotes" name="analysisNotes" rows="6" placeholder="Type your memo here..." style="width:100%;min-height:160px;resize:vertical;border:1px solid #cbd7e6;border-radius:10px;padding:12px;font:inherit">${escapeHTML(data.analysisNotes || "")}</textarea></div>`,f=>{
+  data.analysisNotes=f.get("analysisNotes");
+});
+$("editAllocationBtn").onclick=()=>openModal("Edit portfolio allocation",data.allocation.map((a,i)=>`<div class="form-grid">
+${field("Asset name","name_"+i,a.name)}
+${field("Allocation (%)","percent_"+i,a.percent,"number","0.1")}
+${field("Color (hex)","color_"+i,a.color)}
+</div>`).join(""),f=>{
+  data.allocation=data.allocation.map((a,i)=>({...a,name:f.get("name_"+i),percent:Number(f.get("percent_"+i)),color:/^#[0-9a-fA-F]{6}$/.test(f.get("color_"+i))?f.get("color_"+i):a.color}));
+});
+$("editAnnualBtn").onclick=()=>openModal("Edit annual performance",data.annual.map((a,i)=>`<div class="form-grid">
+${field("Year","year_"+i,a.year,"number","1")}
+${field("Portfolio value (USD)","value_"+i,a.value,"number","0.01")}
+${field("Annual return (%)","return_"+i,a.return,"number","0.1")}
+</div>`).join(""),f=>{
+  data.annual=data.annual.map((a,i)=>({year:Number(f.get("year_"+i)),value:Number(f.get("value_"+i)),return:Number(f.get("return_"+i))}));
+});
+$("addInvestmentBtn").onclick = () => openModal("Add investment activity", `<div class="form-grid">${field("Date / year", "date", new Date().getFullYear())}${field("Description", "description", "Additional investment")}${field("Amount (USD)", "amount", "1000", "number", "0.01")}</div>`, f => { data.activity.push({ date: f.get("date"), description: f.get("description"), amount: Number(f.get("amount")) }) });
+$("activityRows").addEventListener("click", e => {
+    const editButton = e.target.closest("[data-edit]");
+    if (editButton) {
+        const i = Number(editButton.dataset.edit), activity = data.activity[i];
+        if (!activity) return;
+        openModal("Edit investment activity", `<div class="form-grid">
+    ${field("Date / year", "date", activity.date)}
+    ${field("Description", "description", activity.description)}
+    ${field("Amount (USD)", "amount", activity.amount, "number", "0.01")}
+  </div>`, f => {
+            data.activity[i] = { date: f.get("date"), description: f.get("description"), amount: Number(f.get("amount")) };
+        });
+    }
+});
+$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="portfolio-data.json";a.click();URL.revokeObjectURL(url)};
+$("resetBtn").onclick=()=>{if(confirm("Reset all dashboard edits to the original demo data?")){data=JSON.parse(JSON.stringify(initialData));saveData();render()}};
+$("closeModal").onclick = () => $("modalBackdrop").classList.add("hidden");
+$("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))$("modalBackdrop").classList.add("hidden")});
+render();
+</script>
+</body>
+</html>
